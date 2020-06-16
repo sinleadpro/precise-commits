@@ -1,4 +1,4 @@
-import { join } from 'path';
+import { join, relative } from 'path';
 
 import {
   getModifiedFilenames,
@@ -83,6 +83,11 @@ export function main(
     const gitDirectoryParent = resolveNearestGitDirectoryParent(
       workingDirectory,
     );
+
+    const relativeWorkingDirectory = relative(
+      gitDirectoryParent,
+      workingDirectory,
+    );
     /**
      * We fundamentally check whether or not the file extensions are supported by the given formatter,
      * whether or not they are included in the optional `filesWhitelist` array, and that the user
@@ -94,7 +99,12 @@ export function main(
       options.head,
     )
       .filter(selectedFormatter.hasSupportedFileExtension)
-      .filter(generateFilesWhitelistPredicate(options.filesWhitelist))
+      .filter(
+        generateFilesWhitelistPredicate(
+          options.filesWhitelist,
+          relativeWorkingDirectory,
+        ),
+      )
       .filter(selectedFormatter.generateIgnoreFilePredicate(workingDirectory));
     /**
      * Report on the the total number of relevant files.

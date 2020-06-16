@@ -1,4 +1,5 @@
 import * as execa from 'execa';
+import { relative } from 'path';
 
 export interface LineChanges {
   start: number;
@@ -34,7 +35,7 @@ export function extractLineChangeData(diffData: string) {
     removals: [],
     additions: [],
   };
-  lineChanges.forEach(lineChange => {
+  lineChanges.forEach((lineChange) => {
     const d = lineChange.match(/(@@ )(-\d+,?\d*)( )(\+\d+,?\d*)( @@)/);
     if (!d) {
       throw new Error('The detected line change data could be not be parsed');
@@ -66,7 +67,7 @@ export function calculateCharacterRangesFromLineChanges(
   fileContents: string,
 ): CharacterRange[] {
   const linesInFile = fileContents.split('\n');
-  return lineChangeData.additions.map(added => {
+  return lineChangeData.additions.map((added) => {
     /**
      * Calculate the character to start at
      */
@@ -103,9 +104,13 @@ export function runCommandSync(
 
 export function generateFilesWhitelistPredicate(
   filesWhitelist: string[] | null,
+  relativeWorkingDirectory: string,
 ): (file: string) => boolean {
   if (!filesWhitelist) {
     return () => true;
   }
-  return file => filesWhitelist.includes(file);
+  return (file) => {
+    const relativeFile = relative(relativeWorkingDirectory, file);
+    return filesWhitelist.includes(relativeFile);
+  };
 }
