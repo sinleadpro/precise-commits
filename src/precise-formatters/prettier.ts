@@ -17,10 +17,12 @@ const dmp = new DiffMatchPatch();
 
 let PRETTIER_SUPPORTED_FILE_EXTENSIONS: string[] = [];
 getSupportInfo().languages.forEach(language => {
-  PRETTIER_SUPPORTED_FILE_EXTENSIONS = [
-    ...PRETTIER_SUPPORTED_FILE_EXTENSIONS,
-    ...language.extensions,
-  ];
+  if (language.extensions) {
+    PRETTIER_SUPPORTED_FILE_EXTENSIONS = [
+      ...PRETTIER_SUPPORTED_FILE_EXTENSIONS,
+      ...language.extensions,
+    ];
+  }
 });
 
 export const preciseFormatterPrettier: PreciseFormatter<PrettierOptions> = {
