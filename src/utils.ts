@@ -111,6 +111,7 @@ export function generateFilesWhitelistPredicate(
   }
   return (file) => {
     const relativeFile = relative(relativeWorkingDirectory, file);
+
     return filesWhitelist.includes(relativeFile);
   };
 }
